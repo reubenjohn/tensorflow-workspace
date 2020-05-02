@@ -1,19 +1,26 @@
-import datetime
-
 import tensorflow as tf
 
-from eye_of_newt.dataset import reconstruction_sanity, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS
+from experiments import form_log_directory_path, DATASET_ROOT_DIR
+from eye_of_newt.data.datasets import image_path_processor
 from utils import configure_default_gpus
 
 K = tf.keras
 
-EXPERIMENT = 'reconstruction-sanity'
 BATCH_SIZE = 64
-LOG_DIR = '../logs/eye_of_newt/%s/%s' % (EXPERIMENT, datetime.datetime.now().isoformat())
+IMG_WIDTH = 512
+IMG_HEIGHT = 352
+IMG_CHANNELS = 3
+LOG_DIR = form_log_directory_path(experiment_name='image-reconstruction-sanity')
 
 configure_default_gpus()
 
-dataset = reconstruction_sanity(BATCH_SIZE)
+dataset = tf.data.Dataset.list_files(DATASET_ROOT_DIR + '/TopGear/still_samples/*.png') \
+    .map(image_path_processor(IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS), num_parallel_calls=tf.data.experimental.AUTOTUNE) \
+    .cache() \
+    .repeat(512) \
+    .shuffle(BATCH_SIZE * 128) \
+    .batch(BATCH_SIZE)
+
 model = K.models.Sequential([
     K.layers.Flatten(input_shape=(IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)),
     K.layers.Dense(10, activation=K.layers.LeakyReLU()),
@@ -45,17 +52,17 @@ def main():
     tb_callback.set_model(model)
     with tf.summary.create_file_writer(LOG_DIR + '/train').as_default() as writer:
         prev_steps = 0
-        for epoch in range(5):
+        for epoch in range(3):
             print('Epoch: %d' % epoch)
-            for curr_epoch_step, (input_batch, target_batch) in enumerate(dataset):
+            for curr_epoch_step, image_batch in enumerate(dataset):
                 step = prev_steps + curr_epoch_step
-                total_loss, predictions = train_step(input_batch, target_batch)
+                total_loss, predictions = train_step(inputs=image_batch, targets=image_batch)
 
                 tf.summary.scalar('epoch', epoch, step=epoch)
                 tf.summary.scalar('step', step, step=step)
                 tf.summary.scalar('loss', total_loss, step=step)
                 [tf.summary.scalar(metric.name, metric.result(), step=step) for metric in metrics]
-                tf.summary.image('input', input_batch, step=step)
+                tf.summary.image('input', image_batch, step=step)
                 tf.summary.image('reconstruction', predictions, step=step)
                 writer.flush()
                 prev_steps += curr_epoch_step

@@ -2,6 +2,13 @@ FROM tensorflow/tensorflow:latest-gpu-py3
 
 ARG ssh_pub_key
 
+# Install Dependencies
+
+
+RUN pip install tensorflow_datasets
+
+# SSH Setup
+
 RUN apt-get update && apt-get install -y openssh-server
 
 RUN mkdir /var/run/sshd
