@@ -8,7 +8,7 @@ Model the rich visual dynamics of diverse video sequences using unsupervised tec
 
 ---
 
-#### Phase 1. [Reproduce input image sanity check](experiments/image_reconstruction_sanity.py) 
+#### Phase 1. [Reproduce input image sanity check](experiments/image_reconstruction_shallow_sanity.py) 
 ![Status|Complete](https://img.shields.io/badge/Status-Complete-brightgreen)
    
 Ability to reproduce one of three input images from the training data using a small scale auto-encoder.
@@ -21,7 +21,7 @@ This experiment is a sanity check and establishes a basic implementation style.
 
 ---
 
-#### Phase 2. [Deep image reproduction sanity check](experiments/deep_image_reconstruction_sanity.py)
+#### Phase 2. [Deep image reproduction sanity check](experiments/image_reconstruction_deep_sanity.py)
 ![Status|Complete](https://img.shields.io/badge/Status-Complete-brightgreen)
 
 Same as Phase 1, but with deep neural network architectures.
