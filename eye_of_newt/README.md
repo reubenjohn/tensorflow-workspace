@@ -1,6 +1,6 @@
 Eye of Newt
 ===
-![Early](https://img.shields.io/badge/Status-Very%20Early%20Stage-yellow)
+![Early](https://img.shields.io/badge/Status-Early%20Stage-yellow)
 
 Model the rich visual dynamics of diverse video sequences using unsupervised techniques to act as a powerful prior to be transferred to further experiments.  
 
@@ -21,7 +21,7 @@ This experiment is a sanity check and establishes a basic implementation style.
 
 ---
 
-#### Phase 2. Deep image reproduction
+#### Phase 2. [Deep image reproduction sanity check](experiments/deep_image_reconstruction_sanity.py)
 ![Early](https://img.shields.io/badge/Status-Final%20Stage-lightgreen)
 
 Same as Phase 1, but with deep neural network architectures.
