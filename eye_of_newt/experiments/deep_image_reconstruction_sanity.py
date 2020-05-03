@@ -10,8 +10,8 @@ from utils import configure_default_gpus, prefetch_to_available_gpu_device
 K = tf.keras
 
 IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS = 512, 352, 3
-BATCH_SIZE, N_SANITY_SAMPLES = 64, 3
-LOG_DIR = form_log_directory_path(experiment_name='deep-image-reconstruction-sanity/v4')
+BATCH_SIZE, N_SANITY_SAMPLES = 32, 3
+LOG_DIR = form_log_directory_path(experiment_name='deep-image-reconstruction-sanity/v4-deep-skip-noise')
 
 configure_default_gpus()
 
@@ -40,7 +40,8 @@ def skip_connecting_auto_encoder_model(inputs,
     activations = K.layers.Conv2DTranspose(**middle_conv_configs)(activations)
 
     for deconv_config, skip_connection in zip(reversed(symmetric_conv_configs), reversed(skip_connections)):
-        concatenated_activation = K.layers.Concatenate()([activations, skip_connection])
+        noisy_skip_connection = K.layers.GaussianNoise(stddev=.25)(skip_connection)
+        concatenated_activation = K.layers.Concatenate()([activations, noisy_skip_connection])
         skip_connecting_deconv = K.layers.Conv2DTranspose(**deconv_config)
         activations = skip_connecting_deconv(concatenated_activation)
 

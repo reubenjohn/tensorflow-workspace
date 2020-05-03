@@ -22,7 +22,7 @@ This experiment is a sanity check and establishes a basic implementation style.
 ---
 
 #### Phase 2. [Deep image reproduction sanity check](experiments/deep_image_reconstruction_sanity.py)
-![Early](https://img.shields.io/badge/Status-Final%20Stage-lightgreen)
+![Status|Complete](https://img.shields.io/badge/Status-Complete-brightgreen)
 
 Same as Phase 1, but with deep neural network architectures.
 
@@ -33,9 +33,9 @@ Same as Phase 1, but with deep neural network architectures.
 |**V2: Deep Conv-Deconv**
 4-Conv-4-Deconv Cannot converge to 100% accuracy due to loss of fine grained spacial information in middle layers|![Deep Model][3]|![Deep Output][4]|
 |**V3: Deep With Skip Connections**
-Converges faster to 97% accuracy as compared to v2 by introducing skip connections from input to deep layers. However, obviously, non-skip connections eventually die as network learns to exploit skip connections!|![Deep Skip Model][5]|![Deep Output][6]|
-|**V4: Deep With Noisy Skip Connections (WIP)**
-Noise in skip connection forces network to learn high-dimensional embeddings of input, whilst leveraging fine grained details of input. Great stepping-stone to phase 4 where inputs don't equal targets|-|-|
+Converges faster to 97% accuracy as compared to v2 by introducing skip connections from input to deep layers. However, obviously, non-skip connections eventually die as network learns to exploit skip connections!|![Deep Skip Model][5]|![Deep Skip Output][6]|
+|**V4: Deep With Noisy Skip Connections**
+Introducing .25 standard deviation gaussian noise in skip connection forces network to learn high-dimensional embeddings of input, whilst leveraging fine grained details of input. Great stepping-stone to phase 4 where inputs don't equal targets|![Deep Skip Model][7]|![Deep Skip Output][8]|
 
 [1]: screenshots/reconstruction-image-sanity-shallow-conv-model.png
 [2]: screenshots/reconstruction-image-sanity-shallow-conv-output.png
@@ -43,13 +43,15 @@ Noise in skip connection forces network to learn high-dimensional embeddings of 
 [4]: screenshots/reconstruction-image-sanity-deep-output.png
 [5]: screenshots/reconstruction-image-sanity-deep-skip-model.png
 [6]: screenshots/reconstruction-image-sanity-deep-skip-output.png
+[7]: screenshots/reconstruction-image-sanity-deep-skip-noise-model.png
+[8]: screenshots/reconstruction-image-sanity-deep-skip-noise-output.png
 
 ##### Training
 ![Training Loss and MSE](screenshots/phase2-training.png)
 
-|Pink|Green|Gray|Training time|
-|---|---|---|---|
-|Shallow Architecture|Deep Architecture|Deep Skip Connection|~45min|
+|Orange|Green|Dark Blue|Light Blue|Training time|
+|---|---|---|---|---|
+|Shallow Architecture|Deep Architecture|Deep Skip Connection|Deep Noisy Skip Connection|~45min|
 
 ---
 
