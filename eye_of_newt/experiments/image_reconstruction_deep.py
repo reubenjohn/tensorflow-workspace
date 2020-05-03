@@ -1,27 +1,28 @@
 import os
 
 import tensorflow as tf
+import tensorflow_datasets as tfds
 
 from experiments import form_log_directory_path
-from eye_of_newt.data.datasets import image_path_processor, DATASET_ROOT_DIR
-from utils import configure_default_gpus, prefetch_to_available_gpu_device
+from eye_of_newt.data.datasets import labelled_video_dataset_to_image_dataset, DATASET_ROOT_DIR
+from utils import configure_default_gpus
 
 K = tf.keras
 
-IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS = 512, 352, 3
-BATCH_SIZE, N_SANITY_SAMPLES = 32, 3
-LOG_DIR = form_log_directory_path(experiment_name='deep-image-reconstruction-sanity/v4-deep-skip-noise')
-
+LOG_DIR = form_log_directory_path(experiment_name='deep-image-reconstruction/main/deep-skip/4096-samples')
 configure_default_gpus()
 
-# Dataset
-dataset = tf.data.Dataset.list_files(DATASET_ROOT_DIR + '/TopGear/still_samples/*.png') \
-    .map(image_path_processor(IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS), num_parallel_calls=tf.data.experimental.AUTOTUNE) \
+# Initialize dataset
+video_train_dataset, info = tfds.load('ucf101', split='train', data_dir=DATASET_ROOT_DIR, with_info=True)
+print(info)
+_, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS = info.features['video'].shape
+BATCH_SIZE, N_SANITY_SAMPLES, FRAMES_PER_VIDEO = 32, 4096, 1
+dataset = labelled_video_dataset_to_image_dataset(video_train_dataset, take_n=FRAMES_PER_VIDEO) \
     .take(N_SANITY_SAMPLES) \
+    .cache('%s/ucf101/cache/%d-classes-%d-frames' % (DATASET_ROOT_DIR, N_SANITY_SAMPLES, FRAMES_PER_VIDEO)) \
     .cache() \
-    .repeat(128 * BATCH_SIZE) \
+    .shuffle(BATCH_SIZE * 4) \
     .batch(BATCH_SIZE)
-dataset = prefetch_to_available_gpu_device(dataset, buffer_size=1, use_workaround=True)
 
 
 # Model
@@ -39,10 +40,11 @@ def skip_connecting_auto_encoder_model(inputs,
     activations = K.layers.Conv2DTranspose(**middle_conv_configs)(activations)
 
     for deconv_config, skip_connection in zip(reversed(symmetric_conv_configs), reversed(skip_connections)):
-        noisy_skip_connection = K.layers.GaussianNoise(stddev=.25)(skip_connection)
-        concatenated_activation = K.layers.Concatenate()([activations, noisy_skip_connection])
+        # noisy_skip_connection = K.layers.GaussianNoise(stddev=.25)(skip_connection)
+        concatenated_activation = K.layers.Concatenate()([activations, skip_connection])
         skip_connecting_deconv = K.layers.Conv2DTranspose(**deconv_config)
         activations = skip_connecting_deconv(concatenated_activation)
+        # activations = skip_connecting_deconv(activations)
 
     activations = reconstruction_layer(activations)
     activations = K.layers.Reshape((IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS))(activations)
@@ -97,11 +99,11 @@ def main():
     tb_callback = K.callbacks.TensorBoard(LOG_DIR)
     tb_callback.set_model(model)
     os.makedirs(LOG_DIR, exist_ok=True)
-    K.utils.plot_model(model, LOG_DIR + '/reconstruction-image-sanity-deep-model.png', show_shapes=True,
+    K.utils.plot_model(model, LOG_DIR + '/model.png', show_shapes=True,
                        expand_nested=True)
     with tf.summary.create_file_writer(LOG_DIR + '/train').as_default() as writer:
         prev_steps = 0
-        for epoch in range(3):
+        for epoch in range(1, 32):
             print('Epoch: %d' % epoch)
             for curr_epoch_step, image_batch in enumerate(dataset):
                 step = prev_steps + curr_epoch_step
@@ -112,9 +114,10 @@ def main():
                 tf.summary.scalar('loss', total_loss, step=step)
                 [tf.summary.scalar(metric.name, metric.result(), step=step) for metric in metrics]
                 tf.summary.image('input', image_batch, step=step)
-                tf.summary.image('reconstruction', predictions, step=step)
+                tf.summary.image('reconstruction', predictions, step=step, max_outputs=8)
                 writer.flush()
                 prev_steps += curr_epoch_step
+            model.save(LOG_DIR + '/model.h5')
 
         writer.close()
 

@@ -55,10 +55,25 @@ Introducing .25 standard deviation gaussian noise in skip connection forces netw
 
 ---
 
-#### Phase 3. Generalized image reproduction  
-![Early](https://img.shields.io/badge/Status-Pending-grey)
+#### Phase 3. [Generalized image reproduction](experiments/image_reconstruction_deep.py)
+![Early](https://img.shields.io/badge/Status-In%20Progress-yellow)
 
 Ability to reproduce input images outside the training data.
+
+|Architecture|Model|Reconstruction|
+|---|---|---|
+|**V1: Deep With Skip Connections**
+Converges to 96% accuracy for 64, 1024 and 4096 datapoints (scales well with dataset size). Not tested with novel input!|![Deep Skip Model][9]|![Deep Skip Output][10]|
+
+[9]: screenshots/phase3/reconstruction-image-deep-skip-model.png
+[10]: screenshots/phase3/reconstruction-image-deep-skip-output.png
+
+##### Training
+![Training Loss and MSE](screenshots/phase3/training.png)
+
+|Green|Pink|Gray|Training time|
+|---|---|---|---|
+|64 datapoints|1024 datapoints|4096 datapoints|~15min|
 
 ---
 
