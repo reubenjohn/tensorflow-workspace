@@ -4,12 +4,15 @@ ARG ssh_pub_key
 
 # Install Dependencies
 
+RUN apt-get update
 
-RUN pip install tensorflow_datasets
+RUN apt-get install -y graphviz
+
+RUN pip install tensorflow_datasets pydot pydotplus graphviz
 
 # SSH Setup
 
-RUN apt-get update && apt-get install -y openssh-server
+RUN apt-get install -y openssh-server graphviz
 
 RUN mkdir /var/run/sshd
 
