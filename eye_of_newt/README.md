@@ -14,7 +14,7 @@ Model the rich visual dynamics of diverse video sequences using unsupervised tec
 Ability to reproduce one of three input images from the training data using a small scale auto-encoder.
 This experiment is a sanity check and establishes a basic implementation style.
 
-|![Reconstruction Sanity](screenshots/reconstruction-sanity-outputs.png)|![Reconstruction Sanity Graph](screenshots/reconstruction-sanity-model.png)|
+|![Reconstruction Sanity](screenshots/phase2/reconstruction-sanity-outputs.png)|![Reconstruction Sanity Graph](screenshots/phase2/reconstruction-sanity-model.png)|
 |---|---|
 |Screenshots of input images and corresponding reconstructions at step 210(left), 300(middle) and 5640(right).|Simple model with essentially only 2 dense layers|
 |**Training time**|~2min to ~0 loss|
@@ -37,17 +37,17 @@ Converges faster to 97% accuracy as compared to v2 by introducing skip connectio
 |**V4: Deep With Noisy Skip Connections**
 Introducing .25 standard deviation gaussian noise in skip connection forces network to learn high-dimensional embeddings of input, whilst leveraging fine grained details of input. Great stepping-stone to phase 4 where inputs don't equal targets|![Deep Skip Model][7]|![Deep Skip Output][8]|
 
-[1]: screenshots/reconstruction-image-sanity-shallow-conv-model.png
-[2]: screenshots/reconstruction-image-sanity-shallow-conv-output.png
-[3]: screenshots/reconstruction-image-sanity-deep-model.png
-[4]: screenshots/reconstruction-image-sanity-deep-output.png
-[5]: screenshots/reconstruction-image-sanity-deep-skip-model.png
-[6]: screenshots/reconstruction-image-sanity-deep-skip-output.png
-[7]: screenshots/reconstruction-image-sanity-deep-skip-noise-model.png
-[8]: screenshots/reconstruction-image-sanity-deep-skip-noise-output.png
+[1]: screenshots/phase2/reconstruction-image-sanity-shallow-conv-model.png
+[2]: screenshots/phase2/reconstruction-image-sanity-shallow-conv-output.png
+[3]: screenshots/phase2/reconstruction-image-sanity-deep-model.png
+[4]: screenshots/phase2/reconstruction-image-sanity-deep-output.png
+[5]: screenshots/phase2/reconstruction-image-sanity-deep-skip-model.png
+[6]: screenshots/phase2/reconstruction-image-sanity-deep-skip-output.png
+[7]: screenshots/phase2/reconstruction-image-sanity-deep-skip-noise-model.png
+[8]: screenshots/phase2/reconstruction-image-sanity-deep-skip-noise-output.png
 
 ##### Training
-![Training Loss and MSE](screenshots/phase2-training.png)
+![Training Loss and MSE](screenshots/phase2/training.png)
 
 |Orange|Green|Dark Blue|Light Blue|Training time|
 |---|---|---|---|---|

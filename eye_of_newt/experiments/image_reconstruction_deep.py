@@ -5,6 +5,7 @@ import tensorflow_datasets as tfds
 
 from experiments import form_log_directory_path
 from eye_of_newt.data.datasets import labelled_video_dataset_to_image_dataset, DATASET_ROOT_DIR
+from shared.layers import NormalizeColorChannels
 from utils import configure_default_gpus
 
 K = tf.keras
@@ -50,14 +51,6 @@ def skip_connecting_auto_encoder_model(inputs,
     activations = K.layers.Reshape((IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS))(activations)
     activations = NormalizeColorChannels()(activations)
     return K.Model(inputs=inputs, outputs=activations)
-
-
-class NormalizeColorChannels(K.layers.Layer):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def call(self, inputs, **kwargs):
-        return tf.clip_by_value(inputs / 2 + .5, 0., 1.)
 
 
 model = skip_connecting_auto_encoder_model(
